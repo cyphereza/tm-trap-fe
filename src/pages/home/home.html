@@ -61,16 +61,32 @@
   </ion-card>
 
 
-
+  <ion-card class='ion-card-purple'>
+      <ion-card-header>
+        Directions
+      </ion-card-header>
+     
+        <ion-card-content class="ion-card-custom" >
+            
+        </ion-card-content>
+        
+       
+      
+  
+    </ion-card>
 
   <ion-card class='ion-card-purple'>
     <ion-card-header>
-      Route
+      Route <button ion-button outline item-end (click)="launchNavigation()">Navigation</button>
     </ion-card-header>
-    <ion-card-header>
-        Ro3pm
-      </ion-card-header>
-      <div #map id="map" style="height:500px;"></div>
+    <div #map id="map" style="height:250px;"></div>
+    <ion-card-content class="ion-card-custom">
+        <div #directionsPanel></div><button ion-button outline item-end (click)="launchNavigation()">Navigation</button>
+      </ion-card-content>
+      
+    
+     
+     
 
   </ion-card>
 
