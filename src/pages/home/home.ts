@@ -11,6 +11,9 @@ import { Diagnostic } from '@ionic-native/diagnostic';
 import { PhonegapLocalNotification } from '@ionic-native/phonegap-local-notification';
 
 
+declare var google;
+declare var GeolocationMarker;
+
 @IonicPage()
 @Component({
     selector: 'page-home',
@@ -32,6 +35,9 @@ export class HomePage {
     @ViewChild('bikeBarCanvas') bikeBarCanvas;
     @ViewChild('doughnutCanvas') doughnutCanvas;
     @ViewChild('lineCanvas') lineCanvas;
+
+    @ViewChild('map') mapElement: ElementRef;
+    map: any;
 
 
 
@@ -79,6 +85,8 @@ export class HomePage {
      * The view loaded, let's query our items for the list
      */
     ionViewDidLoad() {
+
+        this.loadMap();
 
         this.updateChart = setInterval(() => {
             //this.refreshData();
@@ -598,6 +606,54 @@ export class HomePage {
         this.carBarChart.update();
         this.bikeBarChart.update();
     }
+
+    loadMap(){
+       
+        
+           let latLng = new google.maps.LatLng(-34.9290, 138.6010);
+        
+           let mapOptions = {
+             center: latLng,
+             scrollwheel: false,
+             zoom: 15,
+             mapTypeId: google.maps.MapTypeId.ROADMAP
+           }
+        
+           this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
+
+           let GeoMarker = new GeolocationMarker(this.map);
+       
+       
+        
+         }
+
+
+         addMarker(){
+            
+             let marker = new google.maps.Marker({
+               map: this.map,
+               animation: google.maps.Animation.DROP,
+               position: this.map.getCenter()
+             });
+            
+             let content = "<h4>Information!</h4>";         
+            
+             this.addInfoWindow(marker, content);
+            
+           }
+
+           addInfoWindow(marker, content){
+            
+             let infoWindow = new google.maps.InfoWindow({
+               content: content
+             });
+            
+             google.maps.event.addListener(marker, 'click', () => {
+               infoWindow.open(this.map, marker);
+             });
+            
+           }
+       
 
 
 
