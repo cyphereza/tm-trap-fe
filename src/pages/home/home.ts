@@ -9,6 +9,7 @@ import { Items, Weather } from '../../providers/providers';
 import { Geolocation } from '@ionic-native/geolocation';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { PhonegapLocalNotification } from '@ionic-native/phonegap-local-notification';
+import { LaunchNavigator, LaunchNavigatorOptions } from '@ionic-native/launch-navigator';
 
 
 declare var google;
@@ -37,6 +38,7 @@ export class HomePage {
     @ViewChild('lineCanvas') lineCanvas;
 
     @ViewChild('map') mapElement: ElementRef;
+    @ViewChild('directionsPanel') directionsPanel: ElementRef;
     map: any;
 
 
@@ -58,6 +60,7 @@ export class HomePage {
         public menu: MenuController,
         private diagnostic: Diagnostic,
         private localNotification: PhonegapLocalNotification,
+        private launchNavigator: LaunchNavigator,
         public weather: Weather) {
         this.currentItems = this.items.query();
 
@@ -87,6 +90,7 @@ export class HomePage {
     ionViewDidLoad() {
 
         this.loadMap();
+        //this.startNavigating();
 
         this.updateChart = setInterval(() => {
             //this.refreshData();
@@ -608,21 +612,56 @@ export class HomePage {
     }
 
     loadMap(){
-       
+        this.geolocation.getCurrentPosition().then((position) => {
         
-           let latLng = new google.maps.LatLng(-34.9290, 138.6010);
+           let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
         
            let mapOptions = {
              center: latLng,
              scrollwheel: false,
+             draggable: false,
              zoom: 15,
+             zoomControl: false,
+             streetViewControl: false,
+             fullscreenControl: false,
              mapTypeId: google.maps.MapTypeId.ROADMAP
            }
         
            this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
 
            let GeoMarker = new GeolocationMarker(this.map);
-       
+
+           let directionsService = new google.maps.DirectionsService;
+           let directionsDisplay = new google.maps.DirectionsRenderer;
+
+           console.log(directionsService);
+           console.log(JSON.stringify(directionsDisplay));
+    
+           directionsDisplay.setMap(this.map);
+           directionsDisplay.setPanel(this.directionsPanel.nativeElement);
+    
+           directionsService.route({
+            origin: {lat: position.coords.latitude, lng: position.coords.longitude},
+            destination: {lat: 3.116006, lng: 101.665624},
+               travelMode: google.maps.TravelMode['DRIVING']
+           }, (res, status) => {
+    
+               if(status == google.maps.DirectionsStatus.OK){
+                   directionsDisplay.setDirections(res);
+               } else {
+                   console.warn(status);
+               }
+    
+           });
+
+
+
+
+
+
+        }, (err) => {
+            console.log(err);
+          });
        
         
          }
@@ -653,6 +692,42 @@ export class HomePage {
              });
             
            }
+
+           startNavigating(){
+            
+                   let directionsService = new google.maps.DirectionsService;
+                   let directionsDisplay = new google.maps.DirectionsRenderer;
+            
+                   directionsDisplay.setMap(this.map);
+                   directionsDisplay.setPanel(this.directionsPanel.nativeElement);
+            
+                   directionsService.route({
+                       origin: 'adelaide',
+                       destination: 'adelaide oval',
+                       travelMode: google.maps.TravelMode['DRIVING']
+                   }, (res, status) => {
+            
+                       if(status == google.maps.DirectionsStatus.OK){
+                           directionsDisplay.setDirections(res);
+                       } else {
+                           console.warn(status);
+                       }
+            
+                   });
+            
+               }
+
+               launchNavigation(){
+
+                this.launchNavigator.navigate([3.116006, 101.665624])
+                .then(
+                  success => console.log('Launched navigator'),
+                  error => console.log('Error launching navigator', error)
+                );
+
+           
+
+        }
        
 
 

@@ -28,6 +28,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { PhonegapLocalNotification } from '@ionic-native/phonegap-local-notification';
 import { Network } from '@ionic-native/network';
+import { LaunchNavigator, LaunchNavigatorOptions } from '@ionic-native/launch-navigator';
 
 
 // The translate loader needs to know where to load i18n files
@@ -81,6 +82,7 @@ export function provideSettings(storage: Storage) {
     Camera,
     Weather,
     Geolocation,
+    LaunchNavigator,
     LocalNotifications,
     PhonegapLocalNotification,
     Diagnostic,
