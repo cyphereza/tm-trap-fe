@@ -77,11 +77,14 @@
 
   <ion-card class='ion-card-purple'>
     <ion-card-header>
-      Route <button ion-button outline item-end (click)="launchNavigation()">Navigation</button>
+      Route
     </ion-card-header>
     <div #map id="map" style="height:250px;"></div>
     <ion-card-content class="ion-card-custom">
-        <div #directionsPanel></div><button ion-button outline item-end (click)="launchNavigation()">Navigation</button>
+        <div #directionsPanel></div>
+      </ion-card-content>
+      <ion-card-content>
+        <button ion-button outline item-end (click)="launchNavigation()">Navigation</button>
       </ion-card-content>
       
     

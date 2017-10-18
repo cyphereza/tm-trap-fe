@@ -97,18 +97,11 @@ export class HomePage {
             this.updateChartData();
           }, 1000);
 
-          this.geolocation.getCurrentPosition().then((resp) => {
+         /* this.geolocation.getCurrentPosition().then((resp) => {
             // resp.coords.latitude
             // resp.coords.longitude
             console.log('Lat: ' + resp.coords.latitude);
             console.log('Lon: ' + resp.coords.longitude);
-            /*let alert = this.alertCtrl.create({
-              title: 'Your current location',
-              subTitle: 'Lat: ' + resp.coords.latitude + ',Lon: ' + resp.coords.longitude,
-              buttons: ['Ok']
-             
-            });
-            alert.present();*/
 
             let toast = this.toastCtrl.create({
                 message: 'Lat: ' + resp.coords.latitude + ',Lon: ' + resp.coords.longitude,
@@ -125,7 +118,7 @@ export class HomePage {
             // data can be a set of coordinates, or an error (if an error occurred).
             // data.coords.latitude
             // data.coords.longitude
-        });
+        });*/
 
 
     
@@ -619,9 +612,9 @@ export class HomePage {
            let mapOptions = {
              center: latLng,
              scrollwheel: false,
-             draggable: false,
+             draggable: true,
              zoom: 15,
-             zoomControl: false,
+             zoomControl: true,
              streetViewControl: false,
              fullscreenControl: false,
              mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -629,7 +622,6 @@ export class HomePage {
         
            this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
 
-           let GeoMarker = new GeolocationMarker(this.map);
 
            let directionsService = new google.maps.DirectionsService;
            let directionsDisplay = new google.maps.DirectionsRenderer;
