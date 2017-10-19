@@ -1,7 +1,8 @@
 
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { IonicPage, ModalController, NavController, AlertController, ToastController, MenuController, reorderArray, Refresher } from 'ionic-angular';
+import { IonicPage, ModalController, NavController, AlertController, ToastController, MenuController, reorderArray, Refresher, Platform } from 'ionic-angular';
 import { Chart } from 'chart.js';
+import { Subscription } from 'rxjs';
 
 import { Item } from '../../models/item';
 import { Items, Weather } from '../../providers/providers';
@@ -21,6 +22,8 @@ declare var GeolocationMarker;
     templateUrl: 'home.html'
 })
 export class HomePage {
+    private onResumeSubscription: Subscription;
+
     activeMenu: string;
     currentItems: Item[];
     updateChart: any;
@@ -30,6 +33,13 @@ export class HomePage {
     currentInfo: any[];
     editButton: string = 'Edit';
     editing: boolean = false;
+    directionInfo: any[];
+    date: any;
+    hours: any;
+    minutes: any;
+    seconds: any;
+    etaTime: any;
+
 
 
     @ViewChild('carBarCanvas') carBarCanvas;
@@ -38,7 +48,7 @@ export class HomePage {
     @ViewChild('lineCanvas') lineCanvas;
 
     @ViewChild('map') mapElement: ElementRef;
-    @ViewChild('directionsPanel') directionsPanel: ElementRef;
+    //@ViewChild('directionsPanel') directionsPanel: ElementRef;
     map: any;
 
 
@@ -61,7 +71,15 @@ export class HomePage {
         private diagnostic: Diagnostic,
         private localNotification: PhonegapLocalNotification,
         private launchNavigator: LaunchNavigator,
+        platform: Platform,
         public weather: Weather) {
+        this.onResumeSubscription = platform.resume.subscribe(() => {
+                // do something meaningful when the app is put in the foreground
+                this.loadMap();
+                alert("Resume");
+             }); 
+        
+             this.loadMap();     
         this.currentItems = this.items.query();
 
         this.weatherInfo = [
@@ -70,6 +88,15 @@ export class HomePage {
                 destinationLatitude: '',
                 destinationLongitude: '',
 
+
+            }
+        ];
+
+        this.directionInfo = [
+            {
+                distance: '',
+                time: '',
+                
 
             }
         ];
@@ -89,39 +116,39 @@ export class HomePage {
      */
     ionViewDidLoad() {
 
-        this.loadMap();
+        
         //this.startNavigating();
 
         this.updateChart = setInterval(() => {
             //this.refreshData();
             this.updateChartData();
-          }, 1000);
+        }, 10000);
 
-         /* this.geolocation.getCurrentPosition().then((resp) => {
-            // resp.coords.latitude
-            // resp.coords.longitude
-            console.log('Lat: ' + resp.coords.latitude);
-            console.log('Lon: ' + resp.coords.longitude);
+        /* this.geolocation.getCurrentPosition().then((resp) => {
+           // resp.coords.latitude
+           // resp.coords.longitude
+           console.log('Lat: ' + resp.coords.latitude);
+           console.log('Lon: ' + resp.coords.longitude);
 
-            let toast = this.toastCtrl.create({
-                message: 'Lat: ' + resp.coords.latitude + ',Lon: ' + resp.coords.longitude,
-                duration: 3000,
-                position: 'middle'
-            });
-            toast.present();
-        }).catch((error) => {
-            console.log('Error getting location', error);
-        });
+           let toast = this.toastCtrl.create({
+               message: 'Lat: ' + resp.coords.latitude + ',Lon: ' + resp.coords.longitude,
+               duration: 3000,
+               position: 'middle'
+           });
+           toast.present();
+       }).catch((error) => {
+           console.log('Error getting location', error);
+       });
 
-        let watch = this.geolocation.watchPosition();
-        watch.subscribe((data) => {
-            // data can be a set of coordinates, or an error (if an error occurred).
-            // data.coords.latitude
-            // data.coords.longitude
-        });*/
+       let watch = this.geolocation.watchPosition();
+       watch.subscribe((data) => {
+           // data can be a set of coordinates, or an error (if an error occurred).
+           // data.coords.latitude
+           // data.coords.longitude
+       });*/
 
 
-    
+
 
         this.weather.getWeather('3.115033', '101.66577559999996').subscribe((resp) => {
             console.log(resp['weather'][0].main);
@@ -194,7 +221,7 @@ export class HomePage {
 
 
 
-       
+
 
 
 
@@ -272,7 +299,7 @@ export class HomePage {
 
         });
 
-        
+
 
 
         this.bikeBarChart = new Chart(this.bikeBarCanvas.nativeElement, {
@@ -550,8 +577,14 @@ export class HomePage {
 
     }*/
 
+    etaRefresher(){
+        this.loadMap();
+    }
 
     doRefresh(refresher: Refresher) {
+
+        this.loadMap();
+
         console.log('DOREFRESH', refresher);
         let lat = '';
         let lon = '';
@@ -592,60 +625,321 @@ export class HomePage {
         console.log('DOPULLING', refresher.progress);
     }
 
-    refreshData() : void{
+    refreshData(): void {
         console.log('update...');
     }
 
-    updateChartData(){
-        this.carBarChart.data.datasets[0].data = [Math.round(Math.random()*100), Math.round(Math.random()*100), Math.round(Math.random()*100)];
-        this.bikeBarChart.data.datasets[0].data = [Math.round(Math.random()*100), Math.round(Math.random()*100), Math.round(Math.random()*100)];
+    updateChartData() {
+        this.carBarChart.data.datasets[0].data = [Math.round(Math.random() * 100), Math.round(Math.random() * 100), Math.round(Math.random() * 100)];
+        this.bikeBarChart.data.datasets[0].data = [Math.round(Math.random() * 100), Math.round(Math.random() * 100), Math.round(Math.random() * 100)];
         //this.carBarChart.data.labels[3] = "New Label";
         this.carBarChart.update();
         this.bikeBarChart.update();
     }
 
-    loadMap(){
+    loadMap() {
         this.geolocation.getCurrentPosition().then((position) => {
+
+            let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+
+            let styles = {
+                default: null,
+               
+                night: [
+                  {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
+                  {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
+                  {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
+                  {
+                    featureType: 'administrative.locality',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#d59563'}]
+                  },
+                  {
+                    featureType: 'poi',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#d59563'}]
+                  },
+                  {
+                    featureType: 'poi.park',
+                    elementType: 'geometry',
+                    stylers: [{color: '#263c3f'}]
+                  },
+                  {
+                    featureType: 'poi.park',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#6b9a76'}]
+                  },
+                  {
+                    featureType: 'road',
+                    elementType: 'geometry',
+                    stylers: [{color: '#38414e'}]
+                  },
+                  {
+                    featureType: 'road',
+                    elementType: 'geometry.stroke',
+                    stylers: [{color: '#212a37'}]
+                  },
+                  {
+                    featureType: 'road',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#9ca5b3'}]
+                  },
+                  {
+                    featureType: 'road.highway',
+                    elementType: 'geometry',
+                    stylers: [{color: '#746855'}]
+                  },
+                  {
+                    featureType: 'road.highway',
+                    elementType: 'geometry.stroke',
+                    stylers: [{color: '#1f2835'}]
+                  },
+                  {
+                    featureType: 'road.highway',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#f3d19c'}]
+                  },
+                  {
+                    featureType: 'transit',
+                    elementType: 'geometry',
+                    stylers: [{color: '#2f3948'}]
+                  },
+                  {
+                    featureType: 'transit.station',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#d59563'}]
+                  },
+                  {
+                    featureType: 'water',
+                    elementType: 'geometry',
+                    stylers: [{color: '#17263c'}]
+                  },
+                  {
+                    featureType: 'water',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#515c6d'}]
+                  },
+                  {
+                    featureType: 'water',
+                    elementType: 'labels.text.stroke',
+                    stylers: [{color: '#17263c'}]
+                  }
+                ],
         
-           let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                retro: [
+                  {elementType: 'geometry', stylers: [{color: '#ebe3cd'}]},
+                  {elementType: 'labels.text.fill', stylers: [{color: '#523735'}]},
+                  {elementType: 'labels.text.stroke', stylers: [{color: '#f5f1e6'}]},
+                  {
+                    featureType: 'administrative',
+                    elementType: 'geometry.stroke',
+                    stylers: [{color: '#c9b2a6'}]
+                  },
+                  {
+                    featureType: 'administrative.land_parcel',
+                    elementType: 'geometry.stroke',
+                    stylers: [{color: '#dcd2be'}]
+                  },
+                  {
+                    featureType: 'administrative.land_parcel',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#ae9e90'}]
+                  },
+                  {
+                    featureType: 'landscape.natural',
+                    elementType: 'geometry',
+                    stylers: [{color: '#dfd2ae'}]
+                  },
+                  {
+                    featureType: 'poi',
+                    elementType: 'geometry',
+                    stylers: [{color: '#dfd2ae'}]
+                  },
+                  {
+                    featureType: 'poi',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#93817c'}]
+                  },
+                  {
+                    featureType: 'poi.park',
+                    elementType: 'geometry.fill',
+                    stylers: [{color: '#a5b076'}]
+                  },
+                  {
+                    featureType: 'poi.park',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#447530'}]
+                  },
+                  {
+                    featureType: 'road',
+                    elementType: 'geometry',
+                    stylers: [{color: '#f5f1e6'}]
+                  },
+                  {
+                    featureType: 'road.arterial',
+                    elementType: 'geometry',
+                    stylers: [{color: '#fdfcf8'}]
+                  },
+                  {
+                    featureType: 'road.highway',
+                    elementType: 'geometry',
+                    stylers: [{color: '#f8c967'}]
+                  },
+                  {
+                    featureType: 'road.highway',
+                    elementType: 'geometry.stroke',
+                    stylers: [{color: '#e9bc62'}]
+                  },
+                  {
+                    featureType: 'road.highway.controlled_access',
+                    elementType: 'geometry',
+                    stylers: [{color: '#e98d58'}]
+                  },
+                  {
+                    featureType: 'road.highway.controlled_access',
+                    elementType: 'geometry.stroke',
+                    stylers: [{color: '#db8555'}]
+                  },
+                  {
+                    featureType: 'road.local',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#806b63'}]
+                  },
+                  {
+                    featureType: 'transit.line',
+                    elementType: 'geometry',
+                    stylers: [{color: '#dfd2ae'}]
+                  },
+                  {
+                    featureType: 'transit.line',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#8f7d77'}]
+                  },
+                  {
+                    featureType: 'transit.line',
+                    elementType: 'labels.text.stroke',
+                    stylers: [{color: '#ebe3cd'}]
+                  },
+                  {
+                    featureType: 'transit.station',
+                    elementType: 'geometry',
+                    stylers: [{color: '#dfd2ae'}]
+                  },
+                  {
+                    featureType: 'water',
+                    elementType: 'geometry.fill',
+                    stylers: [{color: '#b9d3c2'}]
+                  },
+                  {
+                    featureType: 'water',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#92998d'}]
+                  }
+                ],
         
-           let mapOptions = {
-             center: latLng,
-             scrollwheel: false,
-             draggable: true,
-             zoom: 15,
-             zoomControl: true,
-             streetViewControl: false,
-             fullscreenControl: false,
-             mapTypeId: google.maps.MapTypeId.ROADMAP
-           }
+                hiding: [
+                  {
+                    featureType: 'poi.business',
+                    stylers: [{visibility: 'off'}]
+                  },
+                  {
+                    featureType: 'transit',
+                    elementType: 'labels.icon',
+                    stylers: [{visibility: 'off'}]
+                  }
+                ]
+              };
+
+
+            let mapOptions = {
+                center: latLng,
+                scrollwheel: false,
+                draggable: false,
+                zoom: 15,
+                zoomControl: true,
+                streetViewControl: false,
+                fullscreenControl: false,
+                styles: styles['retro'],
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            }
+
         
-           this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
 
+            this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
 
-           let directionsService = new google.maps.DirectionsService;
-           let directionsDisplay = new google.maps.DirectionsRenderer;
+            let GeoMarker = new GeolocationMarker(this.map);
+            
+            let directionsService = new google.maps.DirectionsService;
+            let directionsDisplay = new google.maps.DirectionsRenderer;
 
-           console.log(directionsService);
-           console.log(JSON.stringify(directionsDisplay));
-    
-           directionsDisplay.setMap(this.map);
-           directionsDisplay.setPanel(this.directionsPanel.nativeElement);
-    
-           directionsService.route({
-            origin: {lat: position.coords.latitude, lng: position.coords.longitude},
-            destination: {lat: 3.116006, lng: 101.665624},
-               travelMode: google.maps.TravelMode['DRIVING']
-           }, (res, status) => {
-    
-               if(status == google.maps.DirectionsStatus.OK){
-                   directionsDisplay.setDirections(res);
-               } else {
-                   console.warn(status);
-               }
-    
-           });
+            console.log(directionsService);
+            console.log(directionsDisplay);
+            
 
+            directionsDisplay.setMap(this.map);
+           // directionsDisplay.setPanel(this.directionsPanel.nativeElement);
+
+            directionsService.route({
+                origin: { lat: position.coords.latitude, lng: position.coords.longitude },
+                destination: { lat: 3.116006, lng: 101.665624 },
+                travelMode: google.maps.TravelMode['DRIVING']
+            }, (res, status) => {
+
+                console.log(res.routes[0].legs[0].distance.text);
+                
+                
+
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay.setDirections(res);
+
+                    let currentTimeSeconds = new Date().getTime() / 1000;
+                    var eta = +currentTimeSeconds.toFixed(0) + +res.routes[0].legs[0].duration.value;
+                    console.log("Text: " + eta);
+                    this.date = new Date(eta * 1000);
+                    // Hours part from the timestamp
+                    this.hours = this.date.getHours();
+                    var ampm = this.hours >= 12 ? 'PM' : 'AM';
+                    if (this.hours > 12) {
+    
+                        this.hours = this.date.getHours() - 12;
+                    } else {
+    
+                        if (this.hours == 0) {
+                            this.hours = 12;
+                        } else {
+                            this.hours = this.date.getHours();
+                        }
+    
+    
+                    }
+    
+                    // Minutes part from the timestamp
+                    this.minutes = "0" + this.date.getMinutes();
+                    // Seconds part from the timestamp
+                    this.seconds = "0" + this.date.getSeconds();
+    
+    
+                    // Will display time in 10:30:23 format
+                    //var etaTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2) + ' ' + ampm;
+                    this.etaTime = this.hours + ':' + this.minutes.substr(-2) + ' ' + ampm;
+                    console.log("TIme ETA: " + this.etaTime)
+
+                    this.directionInfo = [
+                        {
+                            distance: res.routes[0].legs[0].distance.text,
+                            duration: res.routes[0].legs[0].duration.text,
+                            eta: this.etaTime,
+                            text: res.routes[0].legs[0].duration.text + "  • ≈  " + res.routes[0].legs[0].distance.text + ' to office',
+                            
+            
+                        }
+                    ];
+                } else {
+                    console.warn(status);
+                }
+
+            });
 
 
 
@@ -653,74 +947,137 @@ export class HomePage {
 
         }, (err) => {
             console.log(err);
-          });
-       
-        
-         }
+        });
 
 
-         addMarker(){
-            
-             let marker = new google.maps.Marker({
-               map: this.map,
-               animation: google.maps.Animation.DROP,
-               position: this.map.getCenter()
-             });
-            
-             let content = "<h4>Information!</h4>";         
-            
-             this.addInfoWindow(marker, content);
-            
-           }
+    }
 
-           addInfoWindow(marker, content){
-            
-             let infoWindow = new google.maps.InfoWindow({
-               content: content
-             });
-            
-             google.maps.event.addListener(marker, 'click', () => {
-               infoWindow.open(this.map, marker);
-             });
-            
-           }
 
-           startNavigating(){
-            
-                   let directionsService = new google.maps.DirectionsService;
-                   let directionsDisplay = new google.maps.DirectionsRenderer;
-            
-                   directionsDisplay.setMap(this.map);
-                   directionsDisplay.setPanel(this.directionsPanel.nativeElement);
-            
-                   directionsService.route({
-                       origin: 'adelaide',
-                       destination: 'adelaide oval',
-                       travelMode: google.maps.TravelMode['DRIVING']
-                   }, (res, status) => {
-            
-                       if(status == google.maps.DirectionsStatus.OK){
-                           directionsDisplay.setDirections(res);
-                       } else {
-                           console.warn(status);
-                       }
-            
-                   });
-            
-               }
+    addMarker() {
 
-               launchNavigation(){
+        let marker = new google.maps.Marker({
+            map: this.map,
+            animation: google.maps.Animation.DROP,
+            position: this.map.getCenter()
+        });
 
-                this.launchNavigator.navigate([3.116006, 101.665624])
-                .then(
-                  success => console.log('Launched navigator'),
-                  error => console.log('Error launching navigator', error)
-                );
+        let content = "<h4>Information!</h4>";
 
-           
+        this.addInfoWindow(marker, content);
 
+    }
+
+    addInfoWindow(marker, content) {
+
+        let infoWindow = new google.maps.InfoWindow({
+            content: content
+        });
+
+        google.maps.event.addListener(marker, 'click', () => {
+            infoWindow.open(this.map, marker);
+        });
+
+    }
+
+    startNavigating(){
+
+        this.geolocation.getCurrentPosition().then((position) => {
+     
+          let directionsService = new google.maps.DirectionsService;
+            let directionsDisplay = new google.maps.DirectionsRenderer;
+
+            //console.log(directionsService);
+            //console.log(directionsDisplay);
+            
+
+            directionsDisplay.setMap(this.map);
+            //directionsDisplay.setPanel(this.directionsPanel.nativeElement);
+            let newLat = position.coords.latitude;
+            console.log(position.coords.latitude);
+            directionsService.route({
+                origin: { lat: newLat, lng: 101.665624 },
+                destination: { lat: 3.116006, lng: 101.665624 },
+                travelMode: google.maps.TravelMode['DRIVING']
+            }, (res, status) => {
+
+                console.log(res.routes[0].legs[0].distance.text);
+                
+                
+
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay.setDirections(res);
+
+                    let currentTimeSeconds = new Date().getTime() / 1000;
+                    var eta = +currentTimeSeconds.toFixed(0) + +res.routes[0].legs[0].duration.value;
+                    console.log("Text: " + eta);
+                    this.date = new Date(eta * 1000);
+                    // Hours part from the timestamp
+                    this.hours = this.date.getHours();
+                    var ampm = this.hours >= 12 ? 'PM' : 'AM';
+                    if (this.hours > 12) {
+    
+                        this.hours = this.date.getHours() - 12;
+                    } else {
+    
+                        if (this.hours == 0) {
+                            this.hours = 12;
+                        } else {
+                            this.hours = this.date.getHours();
+                        }
+    
+    
+                    }
+    
+                    // Minutes part from the timestamp
+                    this.minutes = "0" + this.date.getMinutes();
+                    // Seconds part from the timestamp
+                    this.seconds = "0" + this.date.getSeconds();
+    
+    
+                    // Will display time in 10:30:23 format
+                    //var etaTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2) + ' ' + ampm;
+                    this.etaTime = this.hours + ':' + this.minutes.substr(-2) + ' ' + ampm;
+                    console.log("TIme ETA: " + this.etaTime)
+
+                    this.directionInfo = [
+                        {
+                            distance: res.routes[0].legs[0].distance.text,
+                            duration: res.routes[0].legs[0].duration.text,
+                            eta: this.etaTime,
+                            text: res.routes[0].legs[0].duration.text + "  • ≈  " + res.routes[0].legs[0].distance.text + ' to office',
+                            
+            
+                        }
+                    ];
+                } else {
+                    console.warn(status);
+                }
+
+            });
+            return 'OK';
+        }, (err) => {
+            console.log(err);
+        });
+     
         }
-       
+
+    launchNavigation() {
+
+        this.launchNavigator.navigate([3.116006, 101.665624])
+            .then(
+            success => console.log('Launched navigator'),
+            error => console.log('Error launching navigator', error)
+            );
+
+
+
+    }
+
+    ngOnDestroy() {
+        // always unsubscribe your subscriptions to prevent leaks
+        this.onResumeSubscription.unsubscribe();
+      }
+
 
 
 

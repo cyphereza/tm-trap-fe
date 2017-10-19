@@ -1,4 +1,12 @@
-.ios, .md {
+.ios,.md,.background{ 
+    background: url('../assets/img/tm_1_blur.png') no-repeat; 
+    background-size: cover; 
+    background-position: center; 
+    margin: auto; 
+    z-index: 2; 
+    }
+
+.ios{
     
      page-home {
 
@@ -14,7 +22,182 @@
             background-color: transparent;
         }
 
-    .ios, ion-header {
+    ion-header {
+        backdrop-filter: blur(8px);
+        
+    }
+
+    .header-image {
+        background-image: url(https://ununsplash.imgix.net/photo-1421091242698-34f6ad7fc088?fit=crop&fm=jpg&h=650&q=75&w=950);
+        height: 20vh;
+    }
+
+    .bg-image {
+        background-image: url(https://ununsplash.imgix.net/photo-1421091242698-34f6ad7fc088?fit=crop&fm=jpg&h=650&q=75&w=950);
+        //background: url('../assets/img/tm_1_blur.png') no-repeat transparent;
+        //height: 100%;
+    }
+
+
+
+    .background{ 
+        background: url('../assets/img/tm_1_blur.png') no-repeat; 
+        background-size: cover; 
+        background-position: center; 
+        margin: auto; 
+        z-index: 2; 
+        }
+
+    //.scroll-content {
+    //    padding-top: 0 !important;
+    //}
+
+    
+    ion-navbar {
+        opacity: 0.6;
+        box-shadow: 0px 1px 13px 1px rgba(0,0,0,0.3);
+        
+    }
+
+    .weather-item {
+        position: absolute;
+        right: 0px;
+        //width: 300px;
+        padding: 10px;
+    }
+
+   
+
+    ion-card {
+        backdrop-filter: blur(8px);
+        background-color:rgba(255,255,255,0.7);
+        width: 96%;
+        margin: 7px;
+        //width: 100%;
+        //margin: 0;
+        margin-bottom: 13px;
+        position: relative;
+        top: 10px;
+        
+    }
+
+    .ion-card-custom {
+        max-height: 100px;
+        //background-color: rgba(255, 255, 255, 1);
+        overflow: scroll;
+        //position: absolute;
+        z-index: 1;
+    }
+
+    .card { border-radius : 10px; } /* or any amount you want */
+
+    ion-card:last-of-type {
+        margin-bottom: 0 !important;
+    }
+
+    #map {
+        width: 100%;
+        height: 100%;
+    }
+
+    ion-item {
+        background-color: #fff;
+    }
+
+
+    .ion-card-header_yellow {
+        backdrop-filter: blur(7px);
+       
+        opacity: 0.7;
+        background-color:rgba(255,255,255,0.3);
+    }
+
+    .ion-card-header_green {
+        background-color:rgb(70, 235, 48);
+    }
+
+    .ion-card-green {
+        border-top: 3px solid rgba(70, 235, 48, 0.3)
+     }
+
+     .ion-card-purple {
+        border-top: 3px solid rgba(198, 48, 235, 0.3)
+     }
+
+     .ion-card-red {
+        border-top: 3px solid rgba(243, 31, 77, 0.3)
+     }
+
+     .ion-card-pink-solid {
+        border-top: 3px solid rgba(255, 99, 132, 1)
+     }
+
+     .ion-card-red-solid {
+        border-top: 3px solid rgb(255, 99, 99)
+     }
+
+
+     .ion-card-blue-solid {
+        border-top: 3px solid rgba(54, 162, 235, 1)
+     }
+
+     .ion-card-yellow-solid {
+        border-top: 3px solid rgba(255, 206, 86, 1)
+     }
+
+     .ion-card-purple-solid {
+        border-top: 3px solid rgba(153, 102, 255, 1)
+     }
+
+     .ion-card-orange-solid {
+        border-top: 3px solid rgba(255, 159, 64, 1)
+     }
+
+     .ion-card-green-solid {
+        border-top: 3px solid rgb(102, 255, 64)
+     }
+
+
+
+     
+
+     .ion-card-yellow {
+        border-top: 3px solid rgba(229, 243, 31, 0.3)
+     }
+
+     .item[no-lines].bottom-border {
+          border-bottom: 1px solid rgb(197, 196, 196); 
+        }
+
+        //.toolbar-background {
+        //    background-color: rgba(0, 0, 0, 0.5);
+        //  }
+          
+       
+}
+    
+   }
+   
+
+
+
+   .md{
+    
+     page-home {
+
+        .scroll {
+            height: 100%
+          }
+     
+          #map {
+            width: 100%;
+            height: 100%;
+          }
+          .transparent-card{
+            background-color: transparent;
+        }
+
+    ion-header {
         backdrop-filter: blur(8px);
         
     }
@@ -35,8 +218,8 @@
     //}
 
     
-    .ios, ion-navbar {
-        opacity: 0.6;
+    ion-navbar {
+        opacity: 0.8;
         box-shadow: 0px 1px 13px 1px rgba(0,0,0,0.3);
         
     }
@@ -53,9 +236,9 @@
     ion-card {
         backdrop-filter: blur(8px);
         background-color:rgba(255,255,255,0.7);
-        width: 95%;
-        margin: 9px;
-        margin-bottom: 15px;
+        width: 96%;
+        margin: 7px;
+        margin-bottom: 13px;
         position: relative;
         top: 5px;
         
@@ -107,6 +290,39 @@
      .ion-card-red {
         border-top: 3px solid rgba(243, 31, 77, 0.3)
      }
+
+     .ion-card-pink-solid {
+        border-top: 3px solid rgba(255, 99, 132, 1)
+     }
+
+     .ion-card-red-solid {
+        border-top: 3px solid rgb(255, 99, 99)
+     }
+
+
+     .ion-card-blue-solid {
+        border-top: 3px solid rgba(54, 162, 235, 1)
+     }
+
+     .ion-card-yellow-solid {
+        border-top: 3px solid rgba(255, 206, 86, 1)
+     }
+
+     .ion-card-purple-solid {
+        border-top: 3px solid rgba(153, 102, 255, 1)
+     }
+
+     .ion-card-orange-solid {
+        border-top: 3px solid rgba(255, 159, 64, 1)
+     }
+
+     .ion-card-green-solid {
+        border-top: 3px solid rgb(102, 255, 64)
+     }
+
+
+
+     
 
      .ion-card-yellow {
         border-top: 3px solid rgba(229, 243, 31, 0.3)

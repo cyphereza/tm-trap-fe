@@ -6,27 +6,29 @@
     </button>
     <ion-title>{{ 'CUST_HOME_TITLE' | translate }}</ion-title>
     <ion-buttons end>
-      <button ion-button (click)="addMarker()"><ion-icon name="add"></ion-icon>Add Marker</button>
-    </ion-buttons> 
+      <button ion-button (click)="addMarker()">
+        <ion-icon name="add"></ion-icon>Add Marker</button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 
-<ion-content fullscreen>
-   
+<ion-content fullscreen class="background"> 
+  <div>
 
-    <ion-refresher (ionRefresh)="doRefresh($event)" (ionPull)="doPulling($event)">
-        <ion-refresher-content
-          pullingText="Pull to refresh..."
-          refreshingText="Refreshing...">
-        </ion-refresher-content>
-      </ion-refresher>
-    
-    
-  <ion-card class='ion-card-red'>
-    <ion-card-header>
-      <b>{{ 'CUST_CARD_PARKING_TITLE' | translate }}</b>
-    </ion-card-header>
+  <ion-refresher (ionRefresh)="doRefresh($event)" (ionPull)="doPulling($event)">
+    <ion-refresher-content pullingText="Pull to refresh..." refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+
+  <ion-card class='ion-card-pink-solid'>
+      <ion-card-header>
+          <ion-icon name="ios-car">
+            </ion-icon>
+        Available Parking Lots
+        
+      </ion-card-header>
 
     <ion-card-content>
       <h3>{{ 'CUST_CAR_TEXT' | translate }}</h3>
@@ -44,12 +46,16 @@
 
 
 
-  <ion-card class='ion-card-green'>
-    <ion-card-header>
-      {{ 'CUST_WEATHER_TITLE' | translate }}
-    </ion-card-header>
+  <ion-card class='ion-card-yellow-solid'>
+      <ion-card-header>
+          <ion-icon name="md-sunny">
+            </ion-icon>
+        Weather
+        <ion-icon style="float: right;" (click)="etaRefresher()" name="md-refresh">
+        </ion-icon>
+      </ion-card-header>
     <ion-card-content>
-      <p>Current</p>
+
       <p end>Cloud 20°</p>
 
     </ion-card-content>
@@ -60,38 +66,49 @@
     </ion-card-content>
   </ion-card>
 
-
-  <ion-card class='ion-card-purple'>
+  <ion-card class='ion-card-blue-solid'>
       <ion-card-header>
-        Directions
+          <ion-icon name="ios-pin">
+            </ion-icon>
+        Estimated Time Arrival
+        <ion-icon style="float: right;" (click)="etaRefresher()" name="md-refresh">
+        </ion-icon>
       </ion-card-header>
-     
-        <ion-card-content class="ion-card-custom" >
-            
-        </ion-card-content>
-        
-       
-      
+      <ion-card-content *ngFor="let direction of directionInfo">
+        <h1><b>{{direction.eta}}</b><ion-icon style="float: right;" (click)="launchNavigation()" name="map">
+        </ion-icon></h1>
+        <p><ion-icon name="car"></ion-icon> {{direction.text}}</p>
+  
+      </ion-card-content>
+            <div #map id="map" style="height:200px;"></div>
+         <!--<ion-card-content class="ion-card-custom">
+          <h3>Directions</h3>
+        <div #directionsPanel></div>
+      </ion-card-content>-->
+      <ion-card-content>
+        <button ion-button outline item-end (click)="launchNavigation()"><ion-icon style="float: right;" name="map">
+        </ion-icon> Navigate with your favourite app</button>
+      </ion-card-content>
+  
   
     </ion-card>
 
-  <ion-card class='ion-card-purple'>
+
+  <ion-card class='ion-card-red-solid'>
     <ion-card-header>
-      Route
+      Directions
     </ion-card-header>
-    <div #map id="map" style="height:250px;"></div>
+
     <ion-card-content class="ion-card-custom">
-        <div #directionsPanel></div>
-      </ion-card-content>
-      <ion-card-content>
-        <button ion-button outline item-end (click)="launchNavigation()">Navigation</button>
-      </ion-card-content>
-      
-    
-     
-     
+
+    </ion-card-content>
+
+
+
 
   </ion-card>
+
+  
 
 
   <ion-card class='ion-card-purple'>
@@ -218,11 +235,11 @@
   </ion-list>
 
 
-  
 
-  
+</div>
 
-  
+
+
 
 
 </ion-content>
