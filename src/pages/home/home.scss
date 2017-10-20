@@ -6,6 +6,18 @@
     z-index: 2; 
     }
 
+
+    .ion-card-direction {
+        max-height: 200px;
+        //background-color: rgba(255, 255, 255, 1);
+        overflow: scroll;
+        //position: absolute;
+        z-index: 1;
+    }
+
+    .card { border-radius : 10px; } /* or any amount you want */
+
+
 .ios{
     
      page-home {
@@ -81,15 +93,7 @@
         
     }
 
-    .ion-card-custom {
-        max-height: 100px;
-        //background-color: rgba(255, 255, 255, 1);
-        overflow: scroll;
-        //position: absolute;
-        z-index: 1;
-    }
-
-    .card { border-radius : 10px; } /* or any amount you want */
+   
 
     ion-card:last-of-type {
         margin-bottom: 0 !important;
@@ -244,16 +248,7 @@
         
     }
 
-    .ion-card-custom {
-        max-height: 100px;
-        //background-color: rgba(255, 255, 255, 1);
-        overflow: scroll;
-        //position: absolute;
-        z-index: 1;
-    }
-
-    .card { border-radius : 10px; } /* or any amount you want */
-
+  
     ion-card:last-of-type {
         margin-bottom: 0 !important;
     }
